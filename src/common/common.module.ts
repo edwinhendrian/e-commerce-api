@@ -4,8 +4,9 @@ import * as winston from 'winston';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma.service';
 import { ValidationService } from './validation.service';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ErrorFilter } from './error.filter';
+import { AuthGuard } from './guards/auth.guard';
 
 @Global()
 @Module({
@@ -22,6 +23,7 @@ import { ErrorFilter } from './error.filter';
     PrismaService,
     ValidationService,
     { provide: APP_FILTER, useClass: ErrorFilter },
+    { provide: APP_GUARD, useClass: AuthGuard },
   ],
   exports: [PrismaService, ValidationService],
 })

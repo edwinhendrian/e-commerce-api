@@ -3,11 +3,13 @@ import { AuthService } from './auth.service';
 import { RegisterRequestDto, RegisterResponseDto } from './dto/register.dto';
 import { LoginRequestDto, LoginResponseDto } from './dto/login.dto';
 import { WebResponse } from 'src/common/web-response';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('/api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @Post('/register')
   @HttpCode(200)
   async register(
@@ -19,6 +21,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @Post('/login')
   @HttpCode(200)
   async login(
