@@ -12,14 +12,14 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(
-    private validationService: ValidationService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
+    private validationService: ValidationService,
     private prismaService: PrismaService,
     private jwtService: JwtService,
   ) {}
 
   async register(request: RegisterRequestDto): Promise<RegisterResponseDto> {
-    this.logger.info(`Registering new user ${JSON.stringify(request)}`);
+    this.logger.debug('Registering new user', { request });
     const registerRequest = this.validationService.validate(
       AuthValidation.REGISTER,
       request,
@@ -33,7 +33,7 @@ export class AuthService {
 
     if (userCount != 0) {
       this.logger.error(
-        `User with email ${registerRequest.email} already exists`,
+        'User with email ${registerRequest.email} already exists',
       );
       throw new HttpException('User already exists', 409);
     }
@@ -57,7 +57,7 @@ export class AuthService {
   }
 
   async login(request: LoginRequestDto): Promise<LoginResponseDto> {
-    this.logger.info(`Logging in user ${JSON.stringify(request)}`);
+    this.logger.debug('Logging in user', { request });
     const loginRequest = this.validationService.validate(
       AuthValidation.LOGIN,
       request,
@@ -82,7 +82,10 @@ export class AuthService {
       throw new HttpException('Email or password is incorrect', 401);
     }
 
-    const token = await this.jwtService.signAsync({ sub: user.id });
+    const token = await this.jwtService.signAsync({
+      sub: user.id,
+      role: user.role,
+    });
 
     user = await this.prismaService.user.update({
       where: { id: user.id },
@@ -96,5 +99,16 @@ export class AuthService {
       name: user.name,
       token: user.token,
     };
+  }
+
+  async logout(userId: any): Promise<boolean> {
+    this.logger.info('Logging out user', { userId });
+
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { token: null },
+    });
+
+    return true;
   }
 }

@@ -27,7 +27,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request.headers.authorization);
+    const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new HttpException('Unauthorized', 401);
     }
@@ -38,8 +38,8 @@ export class AuthGuard implements CanActivate {
       });
 
       request.user = payload;
-    } catch {
-      throw new HttpException('Unauthorized', 401);
+    } catch (error) {
+      throw new HttpException(error, 401);
     }
 
     return true;

@@ -7,6 +7,7 @@ import { ValidationService } from './validation.service';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ErrorFilter } from './error.filter';
 import { AuthGuard } from './guards/auth.guard';
+import { RolesGuard } from './guards/roles.guard';
 
 @Global()
 @Module({
@@ -24,6 +25,7 @@ import { AuthGuard } from './guards/auth.guard';
     ValidationService,
     { provide: APP_FILTER, useClass: ErrorFilter },
     { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
   exports: [PrismaService, ValidationService],
 })
