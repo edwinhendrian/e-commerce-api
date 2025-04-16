@@ -8,6 +8,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ErrorFilter } from './error.filter';
 import { AuthGuard } from './guards/auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { UploadService } from './upload.service';
 
 @Global()
 @Module({
@@ -26,7 +27,8 @@ import { RolesGuard } from './guards/roles.guard';
     { provide: APP_FILTER, useClass: ErrorFilter },
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
+    UploadService,
   ],
-  exports: [PrismaService, ValidationService],
+  exports: [PrismaService, ValidationService, UploadService],
 })
 export class CommonModule {}

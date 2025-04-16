@@ -4,12 +4,14 @@ import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
 import { Logger } from 'winston';
 import {
+  UpdateAvatarResponseDto,
   UpdateUserRequestDto,
   UpdateUserResponseDto,
 } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserValidation } from './user.validation';
 import { User } from '@prisma/client';
+import { UploadService } from 'src/common/upload.service';
 
 @Injectable()
 export class UserService {
@@ -17,6 +19,7 @@ export class UserService {
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private validationService: ValidationService,
     private prismaService: PrismaService,
+    private uploadService: UploadService,
   ) {}
 
   async getAllUsers(): Promise<any> {
@@ -80,6 +83,29 @@ export class UserService {
       email: result.email,
       phone: result.phone,
       name: result.name,
+    };
+  }
+
+  async updateAvatar(
+    userId: string,
+    file: Express.Multer.File,
+  ): Promise<UpdateAvatarResponseDto> {
+    this.logger.debug(`Updating user's avatar`, { userId, file });
+
+    // TODO: Delete old avatar if exists
+
+    const avatar_url = await this.uploadService.uploadImage(file);
+    if (!avatar_url) {
+      throw new HttpException('Failed to upload avatar', 500);
+    }
+
+    const user = await this.prismaService.user.update({
+      where: { id: userId },
+      data: { avatar_url },
+    });
+
+    return {
+      avatar_url: user.avatar_url,
     };
   }
 }

@@ -9,3 +9,7 @@ export class UpdateProductResponseDto extends UpdateProductRequestDto {
   id: string;
   name: string;
 }
+
+export class UpdateProductImagesResponseDto {
+  image_urls: (string | undefined)[];
+}

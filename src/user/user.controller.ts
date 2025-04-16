@@ -1,11 +1,24 @@
-import { Body, Controller, Get, HttpCode, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import {
+  UpdateAvatarResponseDto,
   UpdateUserRequestDto,
   UpdateUserResponseDto,
 } from './dto/update-user.dto';
 import { WebResponse } from 'src/common/web-response';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/config/multer.config';
 
 @Controller('/api/users')
 export class UserController {
@@ -37,6 +50,17 @@ export class UserController {
     @Body() request: UpdateUserRequestDto,
   ): Promise<WebResponse<UpdateUserResponseDto>> {
     const result = await this.userService.updateUserById(id, request);
+    return { data: result };
+  }
+
+  @Put('/:id/avatar')
+  @HttpCode(200)
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  async updateAvatar(
+    @Param('id') id: string,
+    @UploadedFile('file') file: Express.Multer.File,
+  ): Promise<WebResponse<UpdateAvatarResponseDto>> {
+    const result = await this.userService.updateAvatar(id, file);
     return { data: result };
   }
 }

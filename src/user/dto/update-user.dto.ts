@@ -11,3 +11,7 @@ export class UpdateUserResponseDto {
   phone: string | null;
   name: string;
 }
+
+export class UpdateAvatarResponseDto {
+  avatar_url: string | null;
+}

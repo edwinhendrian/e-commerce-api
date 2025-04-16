@@ -7,6 +7,9 @@ import {
   Param,
   Patch,
   Post,
+  Put,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -18,9 +21,12 @@ import {
 import { GetProductResponseDto } from './dto/get-product.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import {
+  UpdateProductImagesResponseDto,
   UpdateProductRequestDto,
   UpdateProductResponseDto,
 } from './dto/update-product.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/config/multer.config';
 
 @Controller('/api/products')
 export class ProductController {
@@ -62,6 +68,17 @@ export class ProductController {
     @Body() request: UpdateProductRequestDto,
   ): Promise<WebResponse<UpdateProductResponseDto>> {
     const result = await this.productService.updateProductById(id, request);
+    return { data: result };
+  }
+
+  @Put('/:id/images')
+  @HttpCode(200)
+  @UseInterceptors(FilesInterceptor('files', 5, multerOptions))
+  async updateProductImages(
+    @Param('id') id: string,
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<WebResponse<UpdateProductImagesResponseDto>> {
+    const result = await this.productService.updateProductImages(id, files);
     return { data: result };
   }
 

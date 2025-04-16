@@ -11,9 +11,11 @@ import { ProductValidation } from './product.validation';
 import { GetProductResponseDto } from './dto/get-product.dto';
 import { Product } from '@prisma/client';
 import {
+  UpdateProductImagesResponseDto,
   UpdateProductRequestDto,
   UpdateProductResponseDto,
 } from './dto/update-product.dto';
+import { UploadService } from 'src/common/upload.service';
 
 @Injectable()
 export class ProductService {
@@ -21,6 +23,7 @@ export class ProductService {
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private validationService: ValidationService,
     private prismaService: PrismaService,
+    private uploadService: UploadService,
   ) {}
 
   async createProduct(
@@ -147,6 +150,45 @@ export class ProductService {
       stock: result.stock,
       categoryId: result.category_id,
     };
+  }
+
+  async updateProductImages(
+    productId: string,
+    files: Express.Multer.File[],
+  ): Promise<UpdateProductImagesResponseDto> {
+    this.logger.debug(`Updating product's images`, { productId, files });
+
+    const productCount = await this.prismaService.product.count({
+      where: { id: productId },
+    });
+    if (productCount == 0) {
+      this.logger.error(`Product with ID ${productId} not found`);
+      throw new HttpException('Product not found', 404);
+    }
+
+    //TODO: update images partial (max 5 images in total)
+    //TODO: delete old images
+
+    const image_urls = await this.uploadService.uploadImages(files);
+    if (!image_urls) {
+      throw new HttpException('Failed to upload images', 500);
+    }
+
+    //TODO: if 1 image fails to upload, remove all images
+    const productImages = await Promise.all(
+      image_urls.map((url) => {
+        if (url) {
+          return this.prismaService.productImage.create({
+            data: {
+              product_id: productId,
+              image_url: url,
+            },
+          });
+        }
+      }),
+    );
+
+    return { image_urls: productImages.map((image) => image?.image_url) };
   }
 
   async deleteProductById(productId: string): Promise<boolean> {
