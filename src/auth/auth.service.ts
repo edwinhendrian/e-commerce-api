@@ -33,7 +33,7 @@ export class AuthService {
 
     if (userCount != 0) {
       this.logger.error(
-        'User with email ${registerRequest.email} already exists',
+        `User with email ${registerRequest.email} already exists`,
       );
       throw new HttpException('User already exists', 409);
     }

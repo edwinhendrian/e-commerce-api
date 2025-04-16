@@ -12,7 +12,7 @@ export class AuthController {
 
   @Public()
   @Post('/register')
-  @HttpCode(200)
+  @HttpCode(201)
   async register(
     @Body() request: RegisterRequestDto,
   ): Promise<WebResponse<RegisterResponseDto>> {

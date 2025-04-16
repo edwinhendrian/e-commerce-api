@@ -9,6 +9,7 @@ import {
 } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserValidation } from './user.validation';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -19,6 +20,7 @@ export class UserService {
   ) {}
 
   async getAllUsers(): Promise<any> {
+    // TODO: Define a proper return type
     this.logger.debug('Fetching all users');
 
     const users = await this.prismaService.user.findMany({});
@@ -27,6 +29,7 @@ export class UserService {
   }
 
   async getUserById(userId: string): Promise<any> {
+    // TODO: Define a proper return type
     this.logger.debug('Fetching user by ID', { userId });
 
     const user = await this.prismaService.user.findUnique({
@@ -46,7 +49,9 @@ export class UserService {
       request,
     );
 
-    const data: UpdateUserRequestDto = {};
+    // TODO: Check if user exists
+
+    const data: Partial<User> = {};
     if (updateRequest.email) {
       data.email = updateRequest.email;
     }
