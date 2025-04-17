@@ -18,7 +18,10 @@ import {
   CreateProductRequestDto,
   CreateProductResponseDto,
 } from './dto/create-product.dto';
-import { GetProductResponseDto } from './dto/get-product.dto';
+import {
+  GetAllProductResponseDto,
+  GetProductResponseDto,
+} from './dto/get-product.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import {
   UpdateProductImagesResponseDto,
@@ -45,7 +48,7 @@ export class ProductController {
   @Public()
   @Get('/')
   @HttpCode(200)
-  async getAll(): Promise<WebResponse<GetProductResponseDto[]>> {
+  async getAll(): Promise<WebResponse<GetAllProductResponseDto[]>> {
     const result = await this.productService.getAllProducts();
     return { data: result };
   }

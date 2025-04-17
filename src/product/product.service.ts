@@ -8,7 +8,10 @@ import {
   CreateProductResponseDto,
 } from './dto/create-product.dto';
 import { ProductValidation } from './product.validation';
-import { GetProductResponseDto } from './dto/get-product.dto';
+import {
+  GetAllProductResponseDto,
+  GetProductResponseDto,
+} from './dto/get-product.dto';
 import { Product } from '@prisma/client';
 import {
   UpdateProductImagesResponseDto,
@@ -57,23 +60,29 @@ export class ProductService {
     };
   }
 
-  async getAllProducts(): Promise<GetProductResponseDto[]> {
+  async getAllProducts(): Promise<GetAllProductResponseDto[]> {
     this.logger.debug('Fetching all products');
 
-    const products: Product[] = await this.prismaService.product.findMany({
+    const products = await this.prismaService.product.findMany({
       where: { is_deleted: false },
+      include: {
+        images: {
+          select: {
+            image_url: true,
+          },
+        },
+      },
     });
 
     return products.map((product) => {
       return {
         id: product.id,
         name: product.name,
-        description: product.description,
         price: Number(product.price),
-        stock: product.stock,
-        categoryId: product.category_id,
+        images: product.images.map(
+          (image) => (image as { image_url: string }).image_url,
+        ),
         createdAt: product.created_at,
-        updatedAt: product.updated_at,
       };
     });
   }
@@ -83,6 +92,18 @@ export class ProductService {
 
     const product = await this.prismaService.product.findUnique({
       where: { id: productId, is_deleted: false },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        images: {
+          select: {
+            image_url: true,
+          },
+        },
+      },
     });
 
     if (!product) {
@@ -96,7 +117,10 @@ export class ProductService {
       description: product.description,
       price: Number(product.price),
       stock: product.stock,
-      categoryId: product.category_id,
+      category: product.category.name,
+      images: product.images.map(
+        (image) => (image as { image_url: string }).image_url,
+      ),
       createdAt: product.created_at,
       updatedAt: product.updated_at,
     };
@@ -140,6 +164,18 @@ export class ProductService {
     const result = await this.prismaService.product.update({
       where: { id: productId },
       data,
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        images: {
+          select: {
+            image_url: true,
+          },
+        },
+      },
     });
 
     return {
@@ -149,6 +185,12 @@ export class ProductService {
       price: Number(result.price),
       stock: result.stock,
       categoryId: result.category_id,
+      category: result.category.name,
+      images: result.images.map(
+        (image) => (image as { image_url: string }).image_url,
+      ),
+      createdAt: result.created_at,
+      updatedAt: result.updated_at,
     };
   }
 

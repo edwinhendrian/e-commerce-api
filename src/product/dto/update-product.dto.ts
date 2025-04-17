@@ -8,6 +8,10 @@ export class UpdateProductRequestDto {
 export class UpdateProductResponseDto extends UpdateProductRequestDto {
   id: string;
   name: string;
+  category: string;
+  images: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export class UpdateProductImagesResponseDto {

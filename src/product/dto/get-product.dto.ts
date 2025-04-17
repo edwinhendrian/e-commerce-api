@@ -1,10 +1,14 @@
-export class GetProductResponseDto {
+export class GetAllProductResponseDto {
   id: string;
   name: string;
-  description: string | null;
   price: number;
-  stock: number;
-  categoryId: string;
+  images: string[];
   createdAt: Date;
+}
+
+export class GetProductResponseDto extends GetAllProductResponseDto {
+  description: string | null;
+  stock: number;
+  category: string;
   updatedAt: Date;
 }
