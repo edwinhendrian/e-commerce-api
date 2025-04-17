@@ -4,7 +4,7 @@ import { RegisterRequestDto, RegisterResponseDto } from './dto/register.dto';
 import { LoginRequestDto, LoginResponseDto } from './dto/login.dto';
 import { WebResponse } from 'src/common/web-response';
 import { Public } from 'src/common/decorators/public.decorator';
-import { LogoutDto } from './dto/logout.dto';
+import { AuthDto } from './dto/auth.dto';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -32,7 +32,7 @@ export class AuthController {
 
   @Delete('/logout')
   @HttpCode(204)
-  async logout(@Req() request: LogoutDto): Promise<WebResponse<boolean>> {
+  async logout(@Req() request: AuthDto): Promise<WebResponse<boolean>> {
     const userId = request.user.sub;
     const result = await this.authService.logout(userId);
     return { data: result };
