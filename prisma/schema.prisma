@@ -14,20 +14,22 @@ datasource db {
 }
 
 model User {
-  id              String    @id @default(uuid())
-  email           String    @unique() @db.Text()
-  email_validated Boolean   @default(false) @db.Boolean()
-  phone           String?   @unique() @db.VarChar(20)
-  phone_validated Boolean   @default(false) @db.Boolean()
-  role            Role      @default(USER)
-  name            String    @db.VarChar(100)
-  password        String    @db.Text()
-  avatar_url      String?   @db.Text()
-  token           String?   @db.Text()
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @default(now()) @updatedAt
-  last_login      DateTime? @db.Timestamp()
+  id              String        @id @default(uuid())
+  email           String        @unique() @db.Text()
+  email_validated Boolean       @default(false) @db.Boolean()
+  phone           String?       @unique() @db.VarChar(20)
+  phone_validated Boolean       @default(false) @db.Boolean()
+  role            Role          @default(USER)
+  name            String        @db.VarChar(100)
+  password        String        @db.Text()
+  avatar_url      String?       @db.Text()
+  token           String?       @db.Text()
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @default(now()) @updatedAt
+  last_login      DateTime?     @db.Timestamp()
   carts           Cart[]
+  user_addresses  UserAddress[]
+  orders          Order[]
 
   @@map("users")
 }
@@ -69,7 +71,7 @@ model ProductImage {
   product_id String  @db.Text()
   product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
   image_url  String  @db.Text()
-  isPrimary  Boolean @default(false) @db.Boolean()
+  is_primary Boolean @default(false) @db.Boolean()
 
   @@map("product_images")
 }
@@ -94,4 +96,111 @@ model CartItem {
 
   @@unique([cart_id, product_id])
   @@map("cart_items")
+}
+
+model UserAddress {
+  id             String   @id @default(uuid())
+  user_id        String   @db.Text()
+  user           User     @relation(fields: [user_id], references: [id])
+  recipient_name String   @db.VarChar(100)
+  phone_number   String   @db.VarChar(20)
+  address_line_1 String   @db.VarChar(255)
+  address_line_2 String?  @db.VarChar(255)
+  city           String   @db.VarChar(100)
+  province       String   @db.VarChar(100)
+  country        String   @db.VarChar(100)
+  postal_code    String   @db.VarChar(5)
+  is_primary     Boolean  @default(false) @db.Boolean()
+  created_at     DateTime @default(now())
+
+  @@map("user_addresses")
+}
+
+model Order {
+  id             String        @id @default(uuid())
+  user_id        String        @db.Text()
+  user           User          @relation(fields: [user_id], references: [id])
+  order_number   String        @db.Text()
+  total_amount   Decimal       @db.Decimal(15, 2)
+  shipping_cost  Decimal       @db.Decimal(15, 2)
+  promo_discount Decimal       @db.Decimal(15, 2)
+  status         OrderStatus   @default(PENDING)
+  payment_status PaymentStatus @default(UNPAID)
+  payment        Payment?
+  order_items    OrderItem[]
+  // Address snapshot
+  recipient_name String        @db.VarChar(100)
+  phone_number   String        @db.VarChar(20)
+  address_line_1 String        @db.VarChar(255)
+  address_line_2 String?       @db.VarChar(255)
+  city           String        @db.VarChar(100)
+  province       String        @db.VarChar(100)
+  country        String        @db.VarChar(100)
+  postal_code    String        @db.VarChar(5)
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @default(now()) @updatedAt
+
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  EXPIRED
+  CANCELLED
+  FAILED
+}
+
+model OrderItem {
+  id         String  @id @default(uuid())
+  order_id   String  @db.Text()
+  order      Order   @relation(fields: [order_id], references: [id])
+  product_id String  @db.Text()
+  quantity   Int     @db.Integer()
+  price      Decimal @db.Decimal(15, 2)
+
+  @@map("order_items")
+}
+
+model Promo {
+  id               String       @id @default(uuid())
+  code             String       @db.VarChar(100)
+  description      String       @db.Text()
+  discount_type    DiscountType
+  discount_value   Decimal      @db.Decimal(15, 2) // either % or flat
+  max_discount     Decimal?     @db.Decimal(15, 2)
+  min_order_amount Decimal?     @db.Decimal(15, 2)
+  start_date       DateTime
+  end_date         DateTime
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @default(now()) @updatedAt
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FLAT
+}
+
+model Payment {
+  id                 String   @id @default(uuid())
+  order_id           String   @unique @db.Text()
+  order              Order    @relation(fields: [order_id], references: [id])
+  midtrans_order_id  String   @unique @db.Text()
+  payment_type       String   @db.Text()
+  transaction_status String   @db.Text()
+  transaction_time   String   @db.Text()
+  gross_amount       Decimal  @db.Decimal(15, 2)
+  transaction_id     String   @db.Text()
+  created_at         DateTime @default(now())
+
+  @@map("payments")
 }
