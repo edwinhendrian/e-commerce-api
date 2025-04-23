@@ -175,7 +175,7 @@ model OrderItem {
 
 model Promo {
   id               String       @id @default(uuid())
-  code             String       @db.VarChar(100)
+  code             String       @unique @db.VarChar(100)
   description      String       @db.Text()
   discount_type    DiscountType
   discount_value   Decimal      @db.Decimal(15, 2) // either % or flat

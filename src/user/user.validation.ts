@@ -23,16 +23,16 @@ export class UserValidation {
   });
 
   static readonly UPDATE_USER_ADDRESS: ZodType = z.object({
-    recipientName: z.string().min(1).max(100),
-    phoneNumber: z.string().min(1).max(20),
-    addressLine1: z.string().min(1).max(255),
+    recipientName: z.string().min(1).max(100).optional(),
+    phoneNumber: z.string().min(1).max(20).optional(),
+    addressLine1: z.string().min(1).max(255).optional(),
     addressLine2: z.string().min(1).max(255).optional(),
-    subDistrict: z.string().min(1).max(100),
-    district: z.string().min(1).max(100),
-    city: z.string().min(1).max(100),
-    province: z.string().min(1).max(100),
-    country: z.string().min(1).max(100),
-    postalCode: z.string().min(1).max(5),
+    subDistrict: z.string().min(1).max(100).optional(),
+    district: z.string().min(1).max(100).optional(),
+    city: z.string().min(1).max(100).optional(),
+    province: z.string().min(1).max(100).optional(),
+    country: z.string().min(1).max(100).optional(),
+    postalCode: z.string().min(1).max(5).optional(),
     isPrimary: z.boolean().optional(),
   });
 }
