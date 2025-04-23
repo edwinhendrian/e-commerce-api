@@ -179,4 +179,30 @@ export class CartService {
 
     return true;
   }
+
+  async deleteItemsFromCart(
+    userId: string,
+    productIds: string[],
+  ): Promise<boolean> {
+    this.logger.debug('Deleting items from cart', { userId, productIds });
+
+    const cart = await this.prismaService.cart.findUnique({
+      where: { user_id: userId },
+    });
+    if (!cart) {
+      throw new HttpException('Cart not found', 404);
+    }
+
+    const ids = productIds.map((s) => {
+      return { cart_id: cart.id, product_id: s };
+    });
+
+    for (const id of ids) {
+      await this.prismaService.cartItem.delete({
+        where: { cart_id_product_id: id },
+      });
+    }
+
+    return true;
+  }
 }

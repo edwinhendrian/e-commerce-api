@@ -119,28 +119,19 @@ model UserAddress {
 }
 
 model Order {
-  id             String        @id @default(uuid())
-  user_id        String        @db.Text()
-  user           User          @relation(fields: [user_id], references: [id])
-  order_number   String        @db.Text()
-  total_amount   Decimal       @db.Decimal(15, 2)
-  shipping_cost  Decimal       @db.Decimal(15, 2)
-  promo_discount Decimal       @db.Decimal(15, 2)
-  status         OrderStatus   @default(PENDING)
-  payment_status PaymentStatus @default(UNPAID)
-  payment        Payment?
-  order_items    OrderItem[]
-  // Address snapshot
-  recipient_name String        @db.VarChar(100)
-  phone_number   String        @db.VarChar(20)
-  address_line_1 String        @db.VarChar(255)
-  address_line_2 String?       @db.VarChar(255)
-  city           String        @db.VarChar(100)
-  province       String        @db.VarChar(100)
-  country        String        @db.VarChar(100)
-  postal_code    String        @db.VarChar(5)
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @default(now()) @updatedAt
+  id                     String               @id @default(uuid())
+  user_id                String               @db.Text()
+  user                   User                 @relation(fields: [user_id], references: [id])
+  order_number           String               @unique @db.Text()
+  total_amount           Decimal              @db.Decimal(15, 2)
+  shipping_cost          Decimal              @db.Decimal(15, 2)
+  promo_discount         Decimal              @db.Decimal(15, 2)
+  status                 OrderStatus          @default(PENDING)
+  payment_status         PaymentStatus        @default(UNPAID)
+  payment                Payment?
+  snapshot_id            String               @unique @db.Text()
+  order_address_snapshot OrderAddressSnapshot @relation(fields: [snapshot_id], references: [id])
+  order_items            OrderItem[]
 
   @@map("orders")
 }
@@ -171,6 +162,23 @@ model OrderItem {
   price      Decimal @db.Decimal(15, 2)
 
   @@map("order_items")
+}
+
+model OrderAddressSnapshot {
+  id             String  @id @default(uuid())
+  recipient_name String  @db.VarChar(100)
+  phone_number   String  @db.VarChar(20)
+  address_line_1 String  @db.VarChar(255)
+  address_line_2 String? @db.VarChar(255)
+  sub_district   String  @db.VarChar(100)
+  district       String  @db.VarChar(100)
+  city           String  @db.VarChar(100)
+  province       String  @db.VarChar(100)
+  country        String  @db.VarChar(100)
+  postal_code    String  @db.VarChar(5)
+  order          Order?
+
+  @@map("order_address_snapshots")
 }
 
 model Promo {

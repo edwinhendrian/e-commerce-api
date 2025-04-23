@@ -15,5 +15,5 @@ export class UpdateProductResponseDto extends UpdateProductRequestDto {
 }
 
 export class UpdateProductImagesResponseDto {
-  image_urls: (string | undefined)[];
+  imageUrls: (string | undefined)[];
 }

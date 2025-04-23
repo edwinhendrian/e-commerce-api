@@ -230,7 +230,7 @@ export class ProductService {
       }),
     );
 
-    return { image_urls: productImages.map((image) => image?.image_url) };
+    return { imageUrls: productImages.map((image) => image?.image_url) };
   }
 
   async deleteProductById(productId: string): Promise<boolean> {

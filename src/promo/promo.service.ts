@@ -8,12 +8,13 @@ import {
   CreatePromoResponseDto,
 } from './dto/create-promo.dto';
 import { PromoValidation } from './promo.validation';
-import { GetPromoResponseDto, ValidatePromo } from './dto/get-promo.dto';
+import { GetPromoResponseDto } from './dto/get-promo.dto';
 import { Promo } from '@prisma/client';
 import {
   UpdatePromoRequestDto,
   UpdatePromoResponseDto,
 } from './dto/update-promo.dto';
+import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PromoService {
@@ -219,11 +220,8 @@ export class PromoService {
     return true;
   }
 
-  async validatePromo(
-    code: string,
-    orderAmount: number,
-  ): Promise<ValidatePromo> {
-    this.logger.debug('Validating promo code', { code, orderAmount });
+  async validatePromo(code: string, subTotal: Decimal): Promise<Decimal> {
+    this.logger.debug('Validating promo code', { code, subTotal });
 
     const promo = await this.prismaService.promo.findUnique({
       where: { code },
@@ -239,30 +237,24 @@ export class PromoService {
       throw new HttpException('Promo code is not valid', 400);
     }
 
-    if (
-      promo.min_order_amount &&
-      orderAmount < Number(promo.min_order_amount)
-    ) {
+    if (promo.min_order_amount && subTotal < promo.min_order_amount) {
       throw new HttpException(
         `Minimum order amount is ${String(promo.min_order_amount)}`,
         400,
       );
     }
 
-    let discount = 0;
+    let discount = new Decimal(0);
     if (promo.discount_type == 'PERCENTAGE') {
-      discount = orderAmount * (Number(promo.discount_value) / 100);
+      discount = subTotal.mul(promo.discount_value.div(100));
 
-      if (promo.max_discount && discount > Number(promo.max_discount)) {
-        discount = Number(promo.max_discount);
+      if (promo.max_discount && discount > promo.max_discount) {
+        discount = promo.max_discount;
       }
     } else if (promo.discount_type == 'FLAT') {
-      discount = Number(promo.discount_value);
+      discount = promo.discount_value;
     }
 
-    return {
-      code: promo.code,
-      discount,
-    };
+    return discount;
   }
 }

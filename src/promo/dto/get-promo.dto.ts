@@ -11,8 +11,3 @@ export class GetPromoResponseDto {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export class ValidatePromo {
-  code: string;
-  discount: number;
-}
