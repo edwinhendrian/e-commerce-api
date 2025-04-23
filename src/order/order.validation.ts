@@ -23,4 +23,8 @@ export class OrderValidation {
     shippingCost: z.number().min(0),
     code: z.string().min(1).max(100).nullish(),
   });
+
+  static readonly UPDATE_ORDER_STATUS: ZodType = z.object({
+    status: z.string().min(1).max(10),
+  });
 }

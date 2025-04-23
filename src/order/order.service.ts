@@ -12,6 +12,11 @@ import { OrderValidation } from './order.validation';
 import { Prisma } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { CartService } from 'src/cart/cart.service';
+import { GetOrderResponseDto } from './dto/get-order.dto';
+import {
+  UpdateOrderResponseDto,
+  UpdateOrderStatusRequestDto,
+} from './dto/update-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -144,6 +149,190 @@ export class OrderService {
           price: Number(item.price),
         };
       }),
+      createdAt: order.created_at,
+    };
+  }
+
+  async getAllOrders(userId: string): Promise<GetOrderResponseDto[]> {
+    this.logger.debug('Fetching all orders', { userId });
+
+    const orders = await this.prismaService.order.findMany({
+      where: { user_id: userId },
+      include: {
+        order_address_snapshot: true,
+        order_items: true,
+      },
+    });
+
+    return orders.map((order) => {
+      return {
+        id: order.id,
+        userId: order.user_id,
+        orderNumber: order.order_number,
+        totalAmount: Number(order.total_amount),
+        shippingCost: Number(order.shipping_cost),
+        promoDiscount: Number(order.promo_discount),
+        status: order.status,
+        paymentStatus: order.payment_status,
+        orderAddressSnapshot: {
+          id: order.order_address_snapshot.id,
+          recipientName: order.order_address_snapshot.recipient_name,
+          phoneNumber: order.order_address_snapshot.phone_number,
+          addressLine1: order.order_address_snapshot.address_line_1,
+          addressLine2: order.order_address_snapshot.address_line_2,
+          subDistrict: order.order_address_snapshot.sub_district,
+          district: order.order_address_snapshot.district,
+          city: order.order_address_snapshot.city,
+          province: order.order_address_snapshot.province,
+          country: order.order_address_snapshot.country,
+          postalCode: order.order_address_snapshot.postal_code,
+        },
+        orderItems: order.order_items.map((item) => {
+          return {
+            id: item.id,
+            order_id: item.order_id,
+            product_id: item.product_id,
+            quantity: item.quantity,
+            price: Number(item.price),
+          };
+        }),
+        createdAt: order.created_at,
+      };
+    });
+  }
+
+  async getOrderById(
+    userId: string,
+    orderId: string,
+  ): Promise<GetOrderResponseDto> {
+    this.logger.debug('Fetching order by ID', { userId, orderId });
+
+    const order = await this.prismaService.order.findUnique({
+      where: { id: orderId, user_id: userId },
+      include: {
+        order_address_snapshot: true,
+        order_items: true,
+      },
+    });
+
+    if (!order) {
+      this.logger.error(
+        `Order with ID ${orderId} not found or not owned by user`,
+      );
+      throw new HttpException('Order not found', 404);
+    }
+
+    return {
+      id: order.id,
+      userId: order.user_id,
+      orderNumber: order.order_number,
+      totalAmount: Number(order.total_amount),
+      shippingCost: Number(order.shipping_cost),
+      promoDiscount: Number(order.promo_discount),
+      status: order.status,
+      paymentStatus: order.payment_status,
+      orderAddressSnapshot: {
+        id: order.order_address_snapshot.id,
+        recipientName: order.order_address_snapshot.recipient_name,
+        phoneNumber: order.order_address_snapshot.phone_number,
+        addressLine1: order.order_address_snapshot.address_line_1,
+        addressLine2: order.order_address_snapshot.address_line_2,
+        subDistrict: order.order_address_snapshot.sub_district,
+        district: order.order_address_snapshot.district,
+        city: order.order_address_snapshot.city,
+        province: order.order_address_snapshot.province,
+        country: order.order_address_snapshot.country,
+        postalCode: order.order_address_snapshot.postal_code,
+      },
+      orderItems: order.order_items.map((item) => {
+        return {
+          id: item.id,
+          order_id: item.order_id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price: Number(item.price),
+        };
+      }),
+      createdAt: order.created_at,
+    };
+  }
+
+  async cancelOrder(
+    userId: string,
+    orderId: string,
+  ): Promise<UpdateOrderResponseDto> {
+    this.logger.debug('Cancelling order', { userId, orderId });
+
+    const order = await this.prismaService.order.findUnique({
+      where: { id: orderId, user_id: userId },
+    });
+
+    if (!order) {
+      this.logger.error(
+        `Order with ID ${orderId} not found or not owned by user`,
+      );
+      throw new HttpException('Order not found', 404);
+    }
+
+    const result = await this.prismaService.order.update({
+      where: { id: order.id },
+      data: {
+        status: 'CANCELLED',
+      },
+    });
+
+    return {
+      id: result.id,
+      userId: result.user_id,
+      orderNumber: result.order_number,
+      totalAmount: Number(result.total_amount),
+      shippingCost: Number(result.shipping_cost),
+      promoDiscount: Number(result.promo_discount),
+      status: result.status,
+      paymentStatus: result.payment_status,
+      createdAt: result.created_at,
+    };
+  }
+
+  async updateOrderStatus(
+    userId: string,
+    orderId: string,
+    request: UpdateOrderStatusRequestDto,
+  ): Promise<UpdateOrderResponseDto> {
+    this.logger.debug('Updating order status', { userId, orderId, request });
+    const updateRequest = this.validationService.validate(
+      OrderValidation.UPDATE_ORDER_STATUS,
+      request,
+    );
+
+    const order = await this.prismaService.order.findUnique({
+      where: { id: orderId, user_id: userId },
+    });
+
+    if (!order) {
+      this.logger.error(
+        `Order with ID ${orderId} not found or not owned by user`,
+      );
+      throw new HttpException('Order not found', 404);
+    }
+
+    const result = await this.prismaService.order.update({
+      where: { id: order.id },
+      data: {
+        status: updateRequest.status,
+      },
+    });
+
+    return {
+      id: result.id,
+      userId: result.user_id,
+      orderNumber: result.order_number,
+      totalAmount: Number(result.total_amount),
+      shippingCost: Number(result.shipping_cost),
+      promoDiscount: Number(result.promo_discount),
+      status: result.status,
+      paymentStatus: result.payment_status,
+      createdAt: result.created_at,
     };
   }
 }

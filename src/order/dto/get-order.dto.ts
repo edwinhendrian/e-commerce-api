@@ -1,27 +1,4 @@
-export class CreateOrderRequestDto {
-  items: [
-    {
-      productId: string;
-      quantity: number;
-    },
-  ];
-  address: {
-    recipientName: string;
-    phoneNumber: string;
-    addressLine1: string;
-    addressLine2: string | null;
-    subDistrict: string;
-    district: string;
-    city: string;
-    province: string;
-    country: string;
-    postalCode: string;
-  };
-  shippingCost: number;
-  code: string | null;
-}
-
-export class CreateOrderResponseDto {
+export class GetOrderResponseDto {
   id: string;
   userId: string;
   orderNumber: string;

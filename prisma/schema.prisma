@@ -132,6 +132,7 @@ model Order {
   snapshot_id            String               @unique @db.Text()
   order_address_snapshot OrderAddressSnapshot @relation(fields: [snapshot_id], references: [id])
   order_items            OrderItem[]
+  created_at             DateTime             @default(now())
 
   @@map("orders")
 }
