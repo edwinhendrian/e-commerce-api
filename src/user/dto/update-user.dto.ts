@@ -13,5 +13,5 @@ export class UpdateUserResponseDto {
 }
 
 export class UpdateAvatarResponseDto {
-  avatar_url: string | null;
+  avatarUrl: string | null;
 }

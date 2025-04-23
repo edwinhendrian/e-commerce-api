@@ -106,6 +106,8 @@ model UserAddress {
   phone_number   String   @db.VarChar(20)
   address_line_1 String   @db.VarChar(255)
   address_line_2 String?  @db.VarChar(255)
+  sub_district   String   @db.VarChar(100)
+  district       String   @db.VarChar(100)
   city           String   @db.VarChar(100)
   province       String   @db.VarChar(100)
   country        String   @db.VarChar(100)
@@ -183,6 +185,8 @@ model Promo {
   end_date         DateTime
   created_at       DateTime     @default(now())
   updated_at       DateTime     @default(now()) @updatedAt
+
+  @@map("promos")
 }
 
 enum DiscountType {
