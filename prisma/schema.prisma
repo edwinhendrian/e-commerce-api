@@ -122,7 +122,7 @@ model Order {
   id                     String               @id @default(uuid())
   user_id                String               @db.Text()
   user                   User                 @relation(fields: [user_id], references: [id])
-  order_number           String               @unique @db.Text()
+  order_number           String               @db.Text()
   total_amount           Decimal              @db.Decimal(15, 2)
   shipping_cost          Decimal              @db.Decimal(15, 2)
   promo_discount         Decimal              @db.Decimal(15, 2)
