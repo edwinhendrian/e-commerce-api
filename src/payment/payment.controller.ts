@@ -33,4 +33,6 @@ export class PaymentController {
       await this.paymentService.handleMidtransNotification(request);
     return { data: result };
   }
+
+  // TODO: get payment
 }
