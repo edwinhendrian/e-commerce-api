@@ -4,9 +4,10 @@ import { WebResponse } from 'src/common/web-response';
 import { AuthDto } from 'src/auth/dto/auth.dto';
 import {
   InitiatePaymentResponseDto,
-  midtransNotificationRequestDto,
+  MidtransNotificationRequestDto,
 } from './dto/payment.dto';
 import { Public } from 'src/common/decorators/public.decorator';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
 @Controller('/api/payments')
 export class PaymentController {
@@ -14,6 +15,8 @@ export class PaymentController {
 
   @Post('/:id/initiate')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: InitiatePaymentResponseDto })
   async initiatePayment(
     @Req() request: AuthDto,
     @Param('id') id: string,
@@ -27,7 +30,7 @@ export class PaymentController {
   @Post('/midtrans-notification')
   @HttpCode(200)
   async midtransNotification(
-    @Body() request: midtransNotificationRequestDto,
+    @Body() request: MidtransNotificationRequestDto,
   ): Promise<WebResponse<boolean>> {
     const result =
       await this.paymentService.handleMidtransNotification(request);

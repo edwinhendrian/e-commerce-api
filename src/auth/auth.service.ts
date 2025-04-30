@@ -97,7 +97,7 @@ export class AuthService {
 
     return {
       name: user.name,
-      token: user.token,
+      token: user.token!,
     };
   }
 

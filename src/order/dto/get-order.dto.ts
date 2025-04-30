@@ -1,31 +1,27 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { OrderAddressSnapshotDto, OrderItemsDto } from './order';
+
 export class GetOrderResponseDto {
+  @ApiProperty()
   id: string;
+  @ApiProperty()
   userId: string;
+  @ApiProperty()
   orderNumber: string;
+  @ApiProperty()
   totalAmount: number;
+  @ApiProperty()
   shippingCost: number;
+  @ApiProperty()
   promoDiscount: number;
+  @ApiProperty()
   status: string;
+  @ApiProperty()
   paymentStatus: string;
-  orderAddressSnapshot: {
-    id: string;
-    recipientName: string;
-    phoneNumber: string;
-    addressLine1: string;
-    addressLine2: string | null;
-    subDistrict: string;
-    district: string;
-    city: string;
-    province: string;
-    country: string;
-    postalCode: string;
-  };
-  orderItems: {
-    id: string;
-    order_id: string;
-    product_id: string;
-    quantity: number;
-    price: number;
-  }[];
+  @ApiProperty()
+  orderAddressSnapshot: OrderAddressSnapshotDto;
+  @ApiProperty({ type: OrderItemsDto, isArray: true })
+  orderItems: OrderItemsDto[];
+  @ApiProperty()
   createdAt: Date;
 }

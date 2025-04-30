@@ -20,6 +20,7 @@ import {
   UpdatePromoRequestDto,
   UpdatePromoResponseDto,
 } from './dto/update-promo.dto';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
 @Controller('/api/promos')
 export class PromoController {
@@ -28,6 +29,8 @@ export class PromoController {
   @Post('/')
   @HttpCode(201)
   @Roles(['ADMIN'])
+  @ApiBearerAuth()
+  @ApiResponse({ status: 201, type: CreatePromoResponseDto })
   async createPromo(
     @Body() request: CreatePromoRequestDto,
   ): Promise<WebResponse<CreatePromoResponseDto>> {
@@ -37,6 +40,8 @@ export class PromoController {
 
   @Get('/')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: GetPromoResponseDto, isArray: true })
   async getAll(): Promise<WebResponse<GetPromoResponseDto[]>> {
     const result = await this.promoService.getAllPromos();
     return { data: result };
@@ -44,6 +49,8 @@ export class PromoController {
 
   @Get('/:id')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: GetPromoResponseDto })
   async getPromo(
     @Param('id') id: string,
   ): Promise<WebResponse<GetPromoResponseDto>> {
@@ -54,6 +61,8 @@ export class PromoController {
   @Patch('/:id')
   @HttpCode(200)
   @Roles(['ADMIN'])
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: UpdatePromoResponseDto })
   async updatePromo(
     @Param('id') id: string,
     @Body() request: UpdatePromoRequestDto,
@@ -65,6 +74,7 @@ export class PromoController {
   @Delete('/:id')
   @HttpCode(204)
   @Roles(['ADMIN'])
+  @ApiBearerAuth()
   async deletePromo(@Param('id') id: string): Promise<WebResponse<boolean>> {
     const result = await this.promoService.deletePromoById(id);
     return { data: result };

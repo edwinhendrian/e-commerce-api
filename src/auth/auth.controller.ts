@@ -5,6 +5,7 @@ import { LoginRequestDto, LoginResponseDto } from './dto/login.dto';
 import { WebResponse } from 'src/common/web-response';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthDto } from './dto/auth.dto';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -13,6 +14,7 @@ export class AuthController {
   @Public()
   @Post('/register')
   @HttpCode(201)
+  @ApiResponse({ status: 201, type: RegisterResponseDto })
   async register(
     @Body() request: RegisterRequestDto,
   ): Promise<WebResponse<RegisterResponseDto>> {
@@ -23,6 +25,7 @@ export class AuthController {
   @Public()
   @Post('/login')
   @HttpCode(200)
+  @ApiResponse({ status: 200, type: LoginResponseDto })
   async login(
     @Body() request: LoginRequestDto,
   ): Promise<WebResponse<LoginResponseDto>> {
@@ -32,6 +35,7 @@ export class AuthController {
 
   @Delete('/logout')
   @HttpCode(204)
+  @ApiBearerAuth()
   async logout(@Req() request: AuthDto): Promise<WebResponse<boolean>> {
     const userId = request.user.sub;
     const result = await this.authService.logout(userId);

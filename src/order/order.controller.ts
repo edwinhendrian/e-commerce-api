@@ -21,6 +21,7 @@ import {
   UpdateOrderResponseDto,
   UpdateOrderStatusRequestDto,
 } from './dto/update-order.dto';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
 @Controller('/api/orders')
 export class OrderController {
@@ -28,6 +29,8 @@ export class OrderController {
 
   @Post('/')
   @HttpCode(201)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 201, type: CreateOrderResponseDto })
   async createOrder(
     @Req() request: AuthDto,
     @Body() requestBody: CreateOrderRequestDto,
@@ -39,6 +42,8 @@ export class OrderController {
 
   @Get('/')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: GetOrderResponseDto, isArray: true })
   async getAll(
     @Req() request: AuthDto,
   ): Promise<WebResponse<GetOrderResponseDto[]>> {
@@ -49,6 +54,8 @@ export class OrderController {
 
   @Get('/:id')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: GetOrderResponseDto })
   async getOrder(
     @Req() request: AuthDto,
     @Param('id') id: string,
@@ -60,6 +67,8 @@ export class OrderController {
 
   @Patch('/:id/cancel')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: UpdateOrderResponseDto })
   async cancelOrder(
     @Req() request: AuthDto,
     @Param('id') id: string,
@@ -72,6 +81,8 @@ export class OrderController {
   @Patch('/:id/status')
   @HttpCode(200)
   @Roles(['ADMIN'])
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: UpdateOrderResponseDto })
   async updateOrderStatus(
     @Req() request: AuthDto,
     @Param('id') id: string,

@@ -8,7 +8,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 import * as crypto from 'crypto';
 import {
   InitiatePaymentResponseDto,
-  midtransNotificationRequestDto,
+  MidtransNotificationRequestDto,
 } from './dto/payment.dto';
 
 @Injectable()
@@ -53,7 +53,7 @@ export class PaymentService {
     };
   }
 
-  async handleMidtransNotification(request: midtransNotificationRequestDto) {
+  async handleMidtransNotification(request: MidtransNotificationRequestDto) {
     this.logger.debug('handle notification payment', { request });
 
     const isValid = this.isSignatureValid({

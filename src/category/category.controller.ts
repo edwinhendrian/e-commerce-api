@@ -21,6 +21,7 @@ import {
 import { WebResponse } from 'src/common/web-response';
 import { GetCategoryResponseDto } from './dto/get-category.dto';
 import { Public } from 'src/common/decorators/public.decorator';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
 @Controller('/api/categories')
 export class CategoryController {
@@ -29,6 +30,8 @@ export class CategoryController {
   @Post('/')
   @HttpCode(201)
   @Roles(['ADMIN'])
+  @ApiBearerAuth()
+  @ApiResponse({ status: 201, type: CreateCategoryResponseDto })
   async createCategory(
     @Body() request: CreateCategoryRequestDto,
   ): Promise<WebResponse<CreateCategoryResponseDto>> {
@@ -39,6 +42,7 @@ export class CategoryController {
   @Public()
   @Get('/')
   @HttpCode(200)
+  @ApiResponse({ status: 200, type: GetCategoryResponseDto, isArray: true })
   async getAll(): Promise<WebResponse<GetCategoryResponseDto[]>> {
     const result = await this.categoryService.getAllCategories();
     return { data: result };
@@ -47,6 +51,7 @@ export class CategoryController {
   @Public()
   @Get('/:id')
   @HttpCode(200)
+  @ApiResponse({ status: 200, type: GetCategoryResponseDto })
   async getCategory(
     @Param('id') id: string,
   ): Promise<WebResponse<GetCategoryResponseDto>> {
@@ -57,6 +62,8 @@ export class CategoryController {
   @Put('/:id')
   @HttpCode(200)
   @Roles(['ADMIN'])
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: UpdateCategoryResponseDto })
   async updateCategory(
     @Param('id') id: string,
     @Body() request: UpdateCategoryRequestDto,
@@ -67,6 +74,7 @@ export class CategoryController {
 
   @Delete('/:id')
   @HttpCode(204)
+  @ApiBearerAuth()
   @Roles(['ADMIN'])
   async deleteCategory(@Param('id') id: string): Promise<WebResponse<boolean>> {
     const result = await this.categoryService.deleteCategoryById(id);

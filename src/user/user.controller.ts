@@ -15,6 +15,7 @@ import {
 import { UserService } from './user.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import {
+  AvatarUploadRequestDto,
   UpdateAvatarResponseDto,
   UpdateUserRequestDto,
   UpdateUserResponseDto,
@@ -33,6 +34,12 @@ import {
   UpdateUserAddressRequestDto,
   UpdateUserAddressResponseDto,
 } from './dto/update-user-address.dto';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 @Controller('/api/users')
 export class UserController {
@@ -40,6 +47,8 @@ export class UserController {
 
   @Post('/addresses')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: CreateUserAddressResponseDto })
   async createUserAddress(
     @Req() request: AuthDto,
     @Body() requestBody: CreateUserAddressRequestDto,
@@ -54,6 +63,8 @@ export class UserController {
 
   @Get('/addresses')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: GetUserAddressResponseDto, isArray: true })
   async getAllUserAddresses(
     @Req() request: AuthDto,
   ): Promise<WebResponse<GetUserAddressResponseDto[]>> {
@@ -64,6 +75,8 @@ export class UserController {
 
   @Get('/addresses/:id')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: GetUserAddressResponseDto })
   async getUserAddress(
     @Param('id') id: string,
   ): Promise<WebResponse<GetUserAddressResponseDto>> {
@@ -73,6 +86,8 @@ export class UserController {
 
   @Patch('/addresses/:id')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: UpdateUserAddressResponseDto })
   async updateUserAddress(
     @Req() request: AuthDto,
     @Param('id') id: string,
@@ -89,6 +104,8 @@ export class UserController {
 
   @Patch('/addresses/:id/primary')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: UpdateUserAddressResponseDto })
   async setUserAddressPrimary(
     @Req() request: AuthDto,
     @Param('id') id: string,
@@ -100,6 +117,7 @@ export class UserController {
 
   @Delete('/addresses/:id')
   @HttpCode(204)
+  @ApiBearerAuth()
   async deleteUserAddress(
     @Req() request: AuthDto,
     @Param('id') id: string,
@@ -112,6 +130,8 @@ export class UserController {
   @Get('/')
   @HttpCode(200)
   @Roles(['ADMIN'])
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: GetUserResponseDto, isArray: true })
   async getAll(): Promise<WebResponse<GetUserResponseDto[]>> {
     const result = await this.userService.getAllUsers();
     return { data: result };
@@ -120,6 +140,8 @@ export class UserController {
   @Get('/:id')
   @HttpCode(200)
   @Roles(['ADMIN'])
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: GetUserResponseDto })
   async getUser(
     @Param('id') id: string,
   ): Promise<WebResponse<GetUserResponseDto>> {
@@ -130,6 +152,8 @@ export class UserController {
   @Patch('/:id')
   @HttpCode(200)
   @Roles(['ADMIN'])
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: UpdateUserResponseDto })
   async updateUser(
     @Param('id') id: string,
     @Body() request: UpdateUserRequestDto,
@@ -141,6 +165,9 @@ export class UserController {
   @Put('/:id/avatar')
   @HttpCode(200)
   @UseInterceptors(FileInterceptor('file', multerOptions))
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AvatarUploadRequestDto })
   async updateAvatar(
     @Param('id') id: string,
     @UploadedFile('file') file: Express.Multer.File,

@@ -15,6 +15,7 @@ import { AddCartRequestDto, AddCartResponseDto } from './dto/add-cart.dto';
 import { GetCartResponseDto } from './dto/get-cart.dto';
 import { UpdateItemQuantityResponseDto } from './dto/update-cart-dto';
 import { AuthDto } from 'src/auth/dto/auth.dto';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
 @Controller('/api/cart')
 export class CartController {
@@ -22,6 +23,8 @@ export class CartController {
 
   @Post('/items')
   @HttpCode(201)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 201, type: AddCartResponseDto })
   async addItem(
     @Req() request: AuthDto,
     @Body() requestBody: AddCartRequestDto,
@@ -33,6 +36,8 @@ export class CartController {
 
   @Get('/')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: GetCartResponseDto })
   async getCart(
     @Req() request: AuthDto,
   ): Promise<WebResponse<GetCartResponseDto>> {
@@ -43,6 +48,8 @@ export class CartController {
 
   @Put('/items/:id')
   @HttpCode(200)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: UpdateItemQuantityResponseDto })
   async updateItemQuantity(
     @Req() request: AuthDto,
     @Param('id') id: string,
@@ -59,6 +66,7 @@ export class CartController {
 
   @Delete('/items/:id')
   @HttpCode(204)
+  @ApiBearerAuth()
   async deleteItem(
     @Req() request: AuthDto,
     @Param('id') id: string,

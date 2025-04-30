@@ -1,10 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GetUserAddressResponseDto {
-  @ApiProperty()
-  id: string;
-  @ApiProperty()
-  userId: string;
+export class AddressDto {
   @ApiProperty()
   recipientName: string;
   @ApiProperty()
@@ -25,8 +21,22 @@ export class GetUserAddressResponseDto {
   country: string;
   @ApiProperty()
   postalCode: string;
+}
+
+export class OrderAddressSnapshotDto extends AddressDto {
   @ApiProperty()
-  isPrimary: boolean;
+  id: string;
+}
+
+export class OrderItemsDto {
   @ApiProperty()
-  createdAt: Date;
+  id: string;
+  @ApiProperty()
+  order_id: string;
+  @ApiProperty()
+  product_id: string;
+  @ApiProperty()
+  quantity: number;
+  @ApiProperty()
+  price: number;
 }
