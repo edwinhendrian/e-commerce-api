@@ -27,10 +27,8 @@ export class CategoryService {
     request: CreateCategoryRequestDto,
   ): Promise<CreateCategoryResponseDto> {
     this.logger.debug('Creating category', { request });
-    const createRequest = this.validationService.validate(
-      CategoryValidation.CATEGORY,
-      request,
-    );
+    const createRequest: CreateCategoryRequestDto =
+      this.validationService.validate(CategoryValidation.CATEGORY, request);
 
     const categoryCount = await this.prismaService.category.count({
       where: { name: createRequest.name },
@@ -94,10 +92,8 @@ export class CategoryService {
     request: UpdateCategoryRequestDto,
   ): Promise<UpdateCategoryResponseDto> {
     this.logger.debug('Updating category by ID', { categoryId, request });
-    const updateRequest = this.validationService.validate(
-      CategoryValidation.CATEGORY,
-      request,
-    );
+    const updateRequest: UpdateCategoryRequestDto =
+      this.validationService.validate(CategoryValidation.CATEGORY, request);
 
     const categoryCount = await this.prismaService.category.count({
       where: { name: updateRequest.name },

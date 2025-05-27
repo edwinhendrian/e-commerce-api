@@ -20,7 +20,7 @@ export class AuthService {
 
   async register(request: RegisterRequestDto): Promise<RegisterResponseDto> {
     this.logger.debug('Registering new user', { request });
-    const registerRequest = this.validationService.validate(
+    const registerRequest: RegisterRequestDto = this.validationService.validate(
       AuthValidation.REGISTER,
       request,
     );
@@ -58,7 +58,7 @@ export class AuthService {
 
   async login(request: LoginRequestDto): Promise<LoginResponseDto> {
     this.logger.debug('Logging in user', { request });
-    const loginRequest = this.validationService.validate(
+    const loginRequest: LoginRequestDto = this.validationService.validate(
       AuthValidation.LOGIN,
       request,
     );
@@ -101,7 +101,7 @@ export class AuthService {
     };
   }
 
-  async logout(userId: any): Promise<boolean> {
+  async logout(userId: string): Promise<boolean> {
     this.logger.info('Logging out user', { userId });
 
     await this.prismaService.user.update({

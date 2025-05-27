@@ -24,7 +24,7 @@ export class CartService {
     request: AddCartRequestDto,
   ): Promise<AddCartResponseDto> {
     this.logger.debug('Adding item to cart', { userId, request });
-    const addRequest = this.validationService.validate(
+    const addRequest: AddCartRequestDto = this.validationService.validate(
       CartValidation.ADD_CART,
       request,
     );
@@ -120,10 +120,8 @@ export class CartService {
       productId,
       request,
     });
-    const updateRequest = this.validationService.validate(
-      CartValidation.UPDATE_ITEM,
-      request,
-    );
+    const updateRequest: UpdateItemQuantityRequestDto =
+      this.validationService.validate(CartValidation.UPDATE_ITEM, request);
 
     const cart = await this.prismaService.cart.findUnique({
       where: { user_id: userId },

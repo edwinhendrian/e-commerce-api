@@ -35,7 +35,7 @@ export class UserService {
   async getAllUsers(): Promise<GetUserResponseDto[]> {
     this.logger.debug('Fetching all users');
 
-    const users = await this.prismaService.user.findMany({});
+    const users: User[] = await this.prismaService.user.findMany({});
 
     return users.map((user) => {
       return {
@@ -88,7 +88,7 @@ export class UserService {
     request: UpdateUserRequestDto,
   ): Promise<UpdateUserResponseDto> {
     this.logger.debug('Updating user by ID', { userId, request });
-    const updateRequest = this.validationService.validate(
+    const updateRequest: UpdateUserRequestDto = this.validationService.validate(
       UserValidation.UPDATE_USER,
       request,
     );

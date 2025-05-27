@@ -19,6 +19,7 @@ import {
   UpdateProductResponseDto,
 } from './dto/update-product.dto';
 import { UploadService } from 'src/common/upload.service';
+import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ProductService {
@@ -33,10 +34,11 @@ export class ProductService {
     request: CreateProductRequestDto,
   ): Promise<CreateProductResponseDto> {
     this.logger.debug('Creating product', { request });
-    const createRequest = this.validationService.validate(
-      ProductValidation.CREATE_PRODUCT,
-      request,
-    );
+    const createRequest: CreateProductRequestDto =
+      this.validationService.validate(
+        ProductValidation.CREATE_PRODUCT,
+        request,
+      );
 
     const product = await this.prismaService.product.create({
       data: {
@@ -131,10 +133,11 @@ export class ProductService {
     request: UpdateProductRequestDto,
   ): Promise<UpdateProductResponseDto> {
     this.logger.debug('Updating product by ID', { productId, request });
-    const updateRequest = this.validationService.validate(
-      ProductValidation.UPDATE_PRODUCT,
-      request,
-    );
+    const updateRequest: UpdateProductRequestDto =
+      this.validationService.validate(
+        ProductValidation.UPDATE_PRODUCT,
+        request,
+      );
 
     const productCount = await this.prismaService.product.count({
       where: { name: updateRequest.name },
@@ -150,7 +153,7 @@ export class ProductService {
     }
 
     if (updateRequest.price) {
-      data.price = updateRequest.price;
+      data.price = Decimal(updateRequest.price);
     }
 
     if (updateRequest.stock) {

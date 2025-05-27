@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Put,
-  Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -40,6 +39,7 @@ import {
   ApiConsumes,
   ApiResponse,
 } from '@nestjs/swagger';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller('/api/users')
 export class UserController {
@@ -50,10 +50,10 @@ export class UserController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: CreateUserAddressResponseDto })
   async createUserAddress(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Body() requestBody: CreateUserAddressRequestDto,
   ): Promise<WebResponse<CreateUserAddressResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.userService.createUserAddress(
       userId,
       requestBody,
@@ -66,9 +66,9 @@ export class UserController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: GetUserAddressResponseDto, isArray: true })
   async getAllUserAddresses(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
   ): Promise<WebResponse<GetUserAddressResponseDto[]>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.userService.getUserAddresses(userId);
     return { data: result };
   }
@@ -89,11 +89,11 @@ export class UserController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateUserAddressResponseDto })
   async updateUserAddress(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Param('id') id: string,
     @Body() requestBody: UpdateUserAddressRequestDto,
   ): Promise<WebResponse<UpdateUserAddressResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.userService.updateUserAddressById(
       userId,
       id,
@@ -107,10 +107,10 @@ export class UserController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateUserAddressResponseDto })
   async setUserAddressPrimary(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Param('id') id: string,
   ): Promise<WebResponse<UpdateUserAddressResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.userService.setUserAddressPrimary(userId, id);
     return { data: result };
   }
@@ -119,10 +119,10 @@ export class UserController {
   @HttpCode(204)
   @ApiBearerAuth()
   async deleteUserAddress(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Param('id') id: string,
   ): Promise<WebResponse<boolean>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.userService.deleteUserAddressById(userId, id);
     return { data: result };
   }

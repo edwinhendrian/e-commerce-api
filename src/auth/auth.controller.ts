@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, HttpCode, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterRequestDto, RegisterResponseDto } from './dto/register.dto';
 import { LoginRequestDto, LoginResponseDto } from './dto/login.dto';
@@ -6,6 +6,7 @@ import { WebResponse } from 'src/common/web-response';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthDto } from './dto/auth.dto';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -36,8 +37,8 @@ export class AuthController {
   @Delete('/logout')
   @HttpCode(204)
   @ApiBearerAuth()
-  async logout(@Req() request: AuthDto): Promise<WebResponse<boolean>> {
-    const userId = request.user.sub;
+  async logout(@User() user: AuthDto): Promise<WebResponse<boolean>> {
+    const userId = user.sub;
     const result = await this.authService.logout(userId);
     return { data: result };
   }

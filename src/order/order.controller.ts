@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Req,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -22,6 +21,7 @@ import {
   UpdateOrderStatusRequestDto,
 } from './dto/update-order.dto';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller('/api/orders')
 export class OrderController {
@@ -32,10 +32,10 @@ export class OrderController {
   @ApiBearerAuth()
   @ApiResponse({ status: 201, type: CreateOrderResponseDto })
   async createOrder(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Body() requestBody: CreateOrderRequestDto,
   ): Promise<WebResponse<CreateOrderResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.orderService.createOrder(userId, requestBody);
     return { data: result };
   }
@@ -45,9 +45,9 @@ export class OrderController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: GetOrderResponseDto, isArray: true })
   async getAll(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
   ): Promise<WebResponse<GetOrderResponseDto[]>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.orderService.getAllOrders(userId);
     return { data: result };
   }
@@ -57,10 +57,10 @@ export class OrderController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: GetOrderResponseDto })
   async getOrder(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Param('id') id: string,
   ): Promise<WebResponse<GetOrderResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.orderService.getOrderById(userId, id);
     return { data: result };
   }
@@ -70,10 +70,10 @@ export class OrderController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateOrderResponseDto })
   async cancelOrder(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Param('id') id: string,
   ): Promise<WebResponse<UpdateOrderResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.orderService.cancelOrder(userId, id);
     return { data: result };
   }
@@ -84,11 +84,11 @@ export class OrderController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateOrderResponseDto })
   async updateOrderStatus(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Param('id') id: string,
     @Body() requestBody: UpdateOrderStatusRequestDto,
   ): Promise<WebResponse<UpdateOrderResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.orderService.updateOrderStatus(
       userId,
       id,

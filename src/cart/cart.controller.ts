@@ -7,7 +7,6 @@ import {
   Param,
   Post,
   Put,
-  Req,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { WebResponse } from 'src/common/web-response';
@@ -16,6 +15,7 @@ import { GetCartResponseDto } from './dto/get-cart.dto';
 import { UpdateItemQuantityResponseDto } from './dto/update-cart-dto';
 import { AuthDto } from 'src/auth/dto/auth.dto';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller('/api/cart')
 export class CartController {
@@ -26,10 +26,10 @@ export class CartController {
   @ApiBearerAuth()
   @ApiResponse({ status: 201, type: AddCartResponseDto })
   async addItem(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Body() requestBody: AddCartRequestDto,
   ): Promise<WebResponse<AddCartResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.cartService.addItemToCart(userId, requestBody);
     return { data: result };
   }
@@ -39,9 +39,9 @@ export class CartController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: GetCartResponseDto })
   async getCart(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
   ): Promise<WebResponse<GetCartResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.cartService.getCart(userId);
     return { data: result };
   }
@@ -51,11 +51,11 @@ export class CartController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateItemQuantityResponseDto })
   async updateItemQuantity(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Param('id') id: string,
     @Body() requestBody: UpdateItemQuantityResponseDto,
   ): Promise<WebResponse<UpdateItemQuantityResponseDto>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.cartService.updateItemQuantity(
       userId,
       id,
@@ -68,10 +68,10 @@ export class CartController {
   @HttpCode(204)
   @ApiBearerAuth()
   async deleteItem(
-    @Req() request: AuthDto,
+    @User() user: AuthDto,
     @Param('id') id: string,
   ): Promise<WebResponse<boolean>> {
-    const userId = request.user.sub;
+    const userId = user.sub;
     const result = await this.cartService.deleteItemFromCart(userId, id);
     return { data: result };
   }

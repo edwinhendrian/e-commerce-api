@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateProductRequestDto {
+  @ApiProperty()
+  name: string;
   @ApiPropertyOptional({ type: 'string' })
   description?: string | null;
   @ApiPropertyOptional()
@@ -14,8 +16,6 @@ export class UpdateProductRequestDto {
 export class UpdateProductResponseDto extends UpdateProductRequestDto {
   @ApiProperty()
   id: string;
-  @ApiProperty()
-  name: string;
   @ApiProperty()
   category: string;
   @ApiProperty()

@@ -1,6 +1,4 @@
 export class AuthDto {
-  user: {
-    sub: string;
-    role: string;
-  };
+  sub: string;
+  role: string;
 }

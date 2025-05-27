@@ -300,10 +300,11 @@ export class OrderService {
     request: UpdateOrderStatusRequestDto,
   ): Promise<UpdateOrderResponseDto> {
     this.logger.debug('Updating order status', { userId, orderId, request });
-    const updateRequest = this.validationService.validate(
-      OrderValidation.UPDATE_ORDER_STATUS,
-      request,
-    );
+    const updateRequest: UpdateOrderStatusRequestDto =
+      this.validationService.validate(
+        OrderValidation.UPDATE_ORDER_STATUS,
+        request,
+      );
 
     const order = await this.prismaService.order.findUnique({
       where: { id: orderId, user_id: userId },

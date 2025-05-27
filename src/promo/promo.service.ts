@@ -28,10 +28,8 @@ export class PromoService {
     request: CreatePromoRequestDto,
   ): Promise<CreatePromoResponseDto> {
     this.logger.debug('Creating promo', { request });
-    const createRequest = this.validationService.validate(
-      PromoValidation.CREATE_PROMO,
-      request,
-    );
+    const createRequest: CreatePromoRequestDto =
+      this.validationService.validate(PromoValidation.CREATE_PROMO, request);
 
     const promoCount = await this.prismaService.promo.count({
       where: { code: createRequest.code },
@@ -135,10 +133,8 @@ export class PromoService {
     request: UpdatePromoRequestDto,
   ): Promise<UpdatePromoResponseDto> {
     this.logger.debug('Updating promo by ID', { promoId, request });
-    const updateRequest = this.validationService.validate(
-      PromoValidation.UPDATE_PROMO,
-      request,
-    );
+    const updateRequest: UpdatePromoRequestDto =
+      this.validationService.validate(PromoValidation.UPDATE_PROMO, request);
 
     const promo = await this.prismaService.promo.findUnique({
       where: { id: promoId },
@@ -159,15 +155,15 @@ export class PromoService {
     }
 
     if (updateRequest.discountValue) {
-      data.discount_value = updateRequest.discountValue;
+      data.discount_value = Decimal(updateRequest.discountValue);
     }
 
     if (updateRequest.maxDiscount) {
-      data.max_discount = updateRequest.maxDiscount;
+      data.max_discount = Decimal(updateRequest.maxDiscount);
     }
 
     if (updateRequest.minOrderAmount) {
-      data.min_order_amount = updateRequest.minOrderAmount;
+      data.min_order_amount = Decimal(updateRequest.minOrderAmount);
     }
 
     if (updateRequest.startDate) {
