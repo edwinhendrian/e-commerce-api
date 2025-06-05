@@ -44,7 +44,7 @@ export class ProductController {
 
   @Post('/')
   @HttpCode(201)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 201, type: CreateProductResponseDto })
   async createCategory(
@@ -76,7 +76,7 @@ export class ProductController {
 
   @Patch('/:id')
   @HttpCode(200)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateProductResponseDto })
   async updateProduct(
@@ -104,7 +104,7 @@ export class ProductController {
 
   @Delete('/:id')
   @HttpCode(204)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   async deleteProduct(@Param('id') id: string): Promise<WebResponse<boolean>> {
     const result = await this.productService.deleteProductById(id);

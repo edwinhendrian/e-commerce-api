@@ -28,7 +28,7 @@ export class PromoController {
 
   @Post('/')
   @HttpCode(201)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 201, type: CreatePromoResponseDto })
   async createPromo(
@@ -60,7 +60,7 @@ export class PromoController {
 
   @Patch('/:id')
   @HttpCode(200)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdatePromoResponseDto })
   async updatePromo(
@@ -73,7 +73,7 @@ export class PromoController {
 
   @Delete('/:id')
   @HttpCode(204)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   async deletePromo(@Param('id') id: string): Promise<WebResponse<boolean>> {
     const result = await this.promoService.deletePromoById(id);

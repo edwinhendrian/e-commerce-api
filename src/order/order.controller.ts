@@ -80,7 +80,7 @@ export class OrderController {
 
   @Patch('/:id/status')
   @HttpCode(200)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateOrderResponseDto })
   async updateOrderStatus(

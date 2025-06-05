@@ -129,7 +129,7 @@ export class UserController {
 
   @Get('/')
   @HttpCode(200)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: GetUserResponseDto, isArray: true })
   async getAll(): Promise<WebResponse<GetUserResponseDto[]>> {
@@ -139,7 +139,7 @@ export class UserController {
 
   @Get('/:id')
   @HttpCode(200)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: GetUserResponseDto })
   async getUser(
@@ -151,7 +151,7 @@ export class UserController {
 
   @Patch('/:id')
   @HttpCode(200)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateUserResponseDto })
   async updateUser(

@@ -29,7 +29,7 @@ export class CategoryController {
 
   @Post('/')
   @HttpCode(201)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 201, type: CreateCategoryResponseDto })
   async createCategory(
@@ -61,7 +61,7 @@ export class CategoryController {
 
   @Put('/:id')
   @HttpCode(200)
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateCategoryResponseDto })
   async updateCategory(
@@ -75,7 +75,7 @@ export class CategoryController {
   @Delete('/:id')
   @HttpCode(204)
   @ApiBearerAuth()
-  @Roles(['ADMIN'])
+  @Roles('ADMIN')
   async deleteCategory(@Param('id') id: string): Promise<WebResponse<boolean>> {
     const result = await this.categoryService.deleteCategoryById(id);
     return { data: result };
