@@ -102,6 +102,10 @@ export class ProductService {
   async getProductById(productId: string): Promise<GetProductResponseDto> {
     this.logger.debug('Fetching product by ID', { productId });
 
+    const cachedProductData: GetProductResponseDto | null =
+      await this.cacheManager.get(`getProduct-${productId}`);
+    if (cachedProductData) return cachedProductData;
+
     const product = await this.prismaService.product.findUnique({
       where: { id: productId, is_deleted: false },
       include: {
@@ -123,7 +127,7 @@ export class ProductService {
       throw new HttpException('Product not found', 404);
     }
 
-    return {
+    const productData = {
       id: product.id,
       name: product.name,
       description: product.description,
@@ -136,6 +140,10 @@ export class ProductService {
       createdAt: product.created_at,
       updatedAt: product.updated_at,
     };
+
+    await this.cacheManager.set('getAllProducts', productData, 60 * 60);
+
+    return productData;
   }
 
   async updateProductById(
@@ -150,7 +158,7 @@ export class ProductService {
       );
 
     const productCount = await this.prismaService.product.count({
-      where: { name: updateRequest.name },
+      where: { id: productId },
     });
     if (productCount == 0) {
       this.logger.error(`Product with ID ${productId} not found`);

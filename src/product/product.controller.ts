@@ -47,7 +47,7 @@ export class ProductController {
   @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiResponse({ status: 201, type: CreateProductResponseDto })
-  async createCategory(
+  async createProduct(
     @Body() request: CreateProductRequestDto,
   ): Promise<WebResponse<CreateProductResponseDto>> {
     const result = await this.productService.createProduct(request);
@@ -90,6 +90,7 @@ export class ProductController {
   @Put('/:id/images')
   @HttpCode(200)
   @UseInterceptors(FilesInterceptor('files', 5, multerOptions))
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateProductImagesDto })

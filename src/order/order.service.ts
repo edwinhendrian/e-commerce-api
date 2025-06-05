@@ -42,6 +42,8 @@ export class OrderService {
       where: { id: { in: items.map((item) => item.productId) } },
     });
 
+    // TODO: implements prisma $transaction
+
     let subTotal = new Decimal(0);
     const orderItems: Prisma.OrderItemCreateWithoutOrderInput[] = [];
 
@@ -72,7 +74,7 @@ export class OrderService {
     let promoDiscount = new Decimal(0);
     if (code) {
       promoDiscount = await this.promoService.validatePromo(code, subTotal);
-      subTotal.minus(promoDiscount);
+      subTotal = subTotal.minus(promoDiscount);
     }
 
     const shipping = new Decimal(shippingCost);
@@ -307,7 +309,7 @@ export class OrderService {
       );
 
     const order = await this.prismaService.order.findUnique({
-      where: { id: orderId, user_id: userId },
+      where: { id: orderId },
     });
 
     if (!order) {
