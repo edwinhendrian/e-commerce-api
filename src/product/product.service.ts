@@ -20,11 +20,13 @@ import {
 } from './dto/update-product.dto';
 import { UploadService } from 'src/common/upload.service';
 import { Decimal } from '@prisma/client/runtime/library';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class ProductService {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private validationService: ValidationService,
     private prismaService: PrismaService,
     private uploadService: UploadService,
@@ -65,6 +67,10 @@ export class ProductService {
   async getAllProducts(): Promise<GetAllProductResponseDto[]> {
     this.logger.debug('Fetching all products');
 
+    const cachedProductData: GetAllProductResponseDto[] | null =
+      await this.cacheManager.get('getAllProducts');
+    if (cachedProductData) return cachedProductData;
+
     const products = await this.prismaService.product.findMany({
       where: { is_deleted: false },
       include: {
@@ -76,7 +82,7 @@ export class ProductService {
       },
     });
 
-    return products.map((product) => {
+    const productData = products.map((product) => {
       return {
         id: product.id,
         name: product.name,
@@ -87,6 +93,10 @@ export class ProductService {
         createdAt: product.created_at,
       };
     });
+
+    await this.cacheManager.set('getAllProducts', productData, 60 * 60);
+
+    return productData;
   }
 
   async getProductById(productId: string): Promise<GetProductResponseDto> {
